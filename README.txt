@@ -4,12 +4,13 @@ Brian Kraus, September 2015
 This code is not perfect, but it does rank ping-pong players by ability in
 a satisfactory manner. To run the code:
 
-	0  set path of Ping Pong folder in line 4 of pingpong.py: "pingpongpath = ..."
-	1  install python3.4
-	2  go to the command line
-	3  travel to the PingPong directory: >> cd file/structure/
-	4  enter >> python3.4 pingpong.py
-	5  follow instructions to calculate rankings.
+	1  set path of Ping Pong folder in line 4 of pingpong.py: "pingpongpath = ..."
+	2  create folder Archive: ping/pong/path/..../Archive/
+	3  install python3.4
+	4  go to the command line
+	5  travel to the PingPong directory: >> cd file/structure/
+	6  enter >> python3.4 pingpong.py
+	7  follow instructions to calculate rankings.
 
 This code should be portable enough to work, though you may have to download
 a few Python libraries to get it to run. 
