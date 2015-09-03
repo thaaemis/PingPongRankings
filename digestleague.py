@@ -1,4 +1,4 @@
-import re,time
+import re,time,os
 from datetime import date
 import urllib.request
 
@@ -46,3 +46,27 @@ def digest(url):
         print2(dateval.isoformat()+'  '+str(pl1)+spacer1 + \
                 str(win1)+spacer2+str(pl2)+spacer3+str(win2)+'\n','a')
 
+# saves last applicable player datafile to players.txt in main directory
+def getPlayerFile(startdate,path):
+    archiveFiles = os.listdir(path+'/Archive')
+    datesSaved = []
+    for x in archiveFiles:
+        if x[-11:] == 'players.txt':
+            datestr= x[:10]
+            [year, month, day] = datestr.split('-')
+            datesSaved.append(date(int(year),int(month),int(day)))
+    datesSaved.sort()
+    if len(datesSaved) == 0 or startdate < min(datesSaved):
+        saveStr = ''
+    else:
+        recentInds = [ i-1 for i,date in enumerate(datesSaved) if date>=startdate ]
+        recentInd = -1 if len(recentInds) == 0 else recentInds[0]
+        fileToRetrieve = '/Archive/'+datesSaved[recentInd].isoformat()+'_players.txt'
+        with open(path+fileToRetrieve,'r') as f:
+            saveStr = f.read()
+    with open(path+'players.txt','w') as f:
+        f.write(saveStr)
+    return None    
+    
+            
+getPlayerFile(date(2015,8,25),'C:/Users/bkraus/Dropbox/PingPong/')

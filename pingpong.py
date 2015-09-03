@@ -2,12 +2,13 @@ import time,math,sys,re
 from datetime import date,timedelta
 from playerclass import player,playerlist,match
 #import matplotlib.pyplot as plt
-from digestleague import digest
+from digestleague import digest, getPlayerFile
 
-def main(startdate,enddate,writevar=False,linux=False):
+pingpongpath = 'C:/Users/bkraus/Dropbox/PingPong/'
+def main(startdate,enddate,writevar=False,path=pingpongpath):
 
     # digest() retrieves .csv from google with latest matches
-	# !!!       modify URL as noted in setup.txt         !!!!
+    # !!!       modify URL as noted in setup.txt         !!!!
     url = 'https://docs.google.com/spreadsheets/d/1bSgLACFSFCHh0e82Qb-u-Z2vGrAqhX586QGEAbdW3Ys/pub?gid=98643558&single=true&output=csv'
     digest(url)
 
@@ -52,7 +53,6 @@ def main(startdate,enddate,writevar=False,linux=False):
         return result
 
     # Define path and filenames for reference / saving
-    path = './' if linux else 'C:/Users/bkraus/Dropbox/PingPong/' 
     playerfile = 'players.txt'
     with open(path+playerfile,'r') as f:
         data = f.read()
@@ -125,7 +125,7 @@ def main(startdate,enddate,writevar=False,linux=False):
     # Establish initial laws for today's players
     for plind in range(1,players.n+1):
         pl = players.find(plind)
-	
+    
         if len(pl.match)>0: #did player play today?
             # set up temporal delay and new rankings
             if [pl.mean,pl.std] != [1450,450]:
@@ -162,8 +162,8 @@ def main(startdate,enddate,writevar=False,linux=False):
                 pl.nwins += match.W
                 pl.nloss += match.L
                 pl.prev = max(match.date,pl.prev)
-                print('----  ',opp.name,', won ',match.W,', lost ',match.L,
-                      ', on ',match.date,sep='')
+                print('----  ',opp.name,', won ',match.W,', lost ',
+                      match.L,', on ',match.date,sep='')
                         
             newmean = basis[pl.law2.index(max(pl.law2))]
             newstd = (math.sqrt(2*3.1415927)*max(pl.law2))**-1*10
@@ -209,68 +209,69 @@ def main(startdate,enddate,writevar=False,linux=False):
 
 
 def init():
-	startdate = input('Calculate scores from start date: [mm dd YY]   ')
-	if startdate != '':
-		while True:	
-			try:
-				startdate = startdate.split(' ')	
-				startMonth, startDay, startYear = [int(x) for x in startdate]
-				startdate = date(2000 + startYear, startMonth, startDay)
-				break
-			except ValueError:
-				startdate = input("Input must be 'mm dd YY' format to continue   ")
-	else:
-		startdate = date(2015,7,20)
-	
-	enddate = input('Use matches on or before end date: [mm dd YY]   ')
-	if enddate != '':
-		while True:
-			try:	
-				enddate = enddate.split(' ')	
-				endMonth, endDay, endYear = [int(x) for x in enddate]
-				enddate = date(2000 + endYear, endMonth, endDay)
-				break
-			except ValueError:
-				enddate = input("Input must be 'mm dd YY' format to continue   ")
-	else:
-		enddate = date.today()	
+    startdate = input('Calculate scores from start date: [mm dd YY]   ')
+    if startdate != '':
+        while True:    
+            try:
+                startdate = startdate.split(' ')    
+                startMonth, startDay, startYear = [int(x) for x in startdate]
+                startdate = date(2000 + startYear, startMonth, startDay)
+                break
+            except ValueError:
+                startdate = input("Input must be 'mm dd YY' format to continue   ")
+    else:
+        startdate = date(2015,7,20)
+    
+    enddate = input('Use matches on or before end date: [mm dd YY]   ')
+    if enddate != '':
+        while True:
+            try:    
+                enddate = enddate.split(' ')    
+                endMonth, endDay, endYear = [int(x) for x in enddate]
+                enddate = date(2000 + endYear, endMonth, endDay)
+                break
+            except ValueError:
+                enddate = input("Input must be 'mm dd YY' format to continue   ")
+    else:
+        enddate = date.today()    
 
-	rewrite = input('Rewrite all archive files? y/n:   ')
-	if rewrite != '':
-		while True:	
-			if rewrite == 'y' or rewrite == 'Y' or rewrite == 'yes' or rewrite == '1':
-				rewrite = True
-				break
-			elif rewrite == 'n' or rewrite == 'N' or rewrite == 'no' or rewrite == '0':
-				rewrite = False
-				break
-			else:
-				rewrite = input("Enter 'y' or 'n': rewrite all archive files?  ")
-	else:
-		rewrite = True
+    rewrite = input('Rewrite all archive files? y/n:   ')
+    if rewrite != '':
+        while True:    
+            if rewrite == 'y' or rewrite == 'Y' or rewrite == 'yes' or rewrite == '1':
+                rewrite = True
+                break
+            elif rewrite == 'n' or rewrite == 'N' or rewrite == 'no' or rewrite == '0':
+                rewrite = False
+                break
+            else:
+                rewrite = input("Enter 'y' or 'n': rewrite all archive files?  ")
+    else:
+        rewrite = True
 
-	print(rewrite)
-	daysInTournament = input('How many days constitute a tournament? (7, 1, ...)   ')
-	if daysInTournament != '':
-		while True:
-			try:
-				daysInTournament = abs(int(daysInTournament))
-				if daysInTournament == 0:
-					daysinTournament = 1
-				break
-			except ValueError:
-				daysInTournament = input('Input an integer.   ')
-	else:
-		daysInTournament = 7
+    print(rewrite)
+    daysInTournament = input('How many days constitute a tournament? (7, 1, ...)   ')
+    if daysInTournament != '':
+        while True:
+            try:
+                daysInTournament = abs(int(daysInTournament))
+                if daysInTournament == 0:
+                    daysinTournament = 1
+                break
+            except ValueError:
+                daysInTournament = input('Input an integer.   ')
+    else:
+            daysInTournament = 7
+            
+    getPlayerFile(startdate,pingpongpath)
 
-
-	for i in range(startdate.toordinal(),enddate.toordinal(),daysInTournament):
-		tmpStart = i
-		tmpEnd = i + daysInTournament - 1
-		main(date.fromordinal(tmpStart), date.fromordinal(tmpEnd), rewrite, True) # last variable to specify Linux home dir
-	
-		
-	
+    for i in range(startdate.toordinal(),enddate.toordinal(),daysInTournament):
+        tmpStart = i
+        tmpEnd = i + daysInTournament - 1
+        main(date.fromordinal(tmpStart), date.fromordinal(tmpEnd), rewrite)
+    
+        
+    
 
 
 init()
