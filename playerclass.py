@@ -137,6 +137,13 @@ class playerlist:
                 pl.mean = pl.newstats[0]
                 pl.std = pl.newstats[1]
 
+    def purge(self):
+        purgedList = []
+        for pl in self.list:
+            if pl.nmatch > 0 or pl.nwins + pl.nloss > 0:
+                purgedList.append(pl)
+        self.list = purgedList
+
         
 class match:
     def __init__(self,oppind,date):

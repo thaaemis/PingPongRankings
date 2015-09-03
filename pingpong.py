@@ -4,7 +4,7 @@ from playerclass import player,playerlist,match
 #import matplotlib.pyplot as plt
 from digestleague import digest, getPlayerFile
 
-pingpongpath = 'C:/Users/bkraus/Dropbox/PingPong/'
+pingpongpath = 'C:/Users/bkraus/Documents/GitHub/PingPongRankings/'
 def main(startdate,enddate,writevar=False,path=pingpongpath):
 
     # digest() retrieves .csv from google with latest matches
@@ -97,10 +97,10 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
             
             # create new player if pl1, pl2 not in list already
             if pl1 == None:    
-                players.add(player(attrib[2],players.n+1,1450,450,0,nowdate.toordinal(),0,0))
+                players.add(player(attrib[2],players.n+1,1400,450,0,nowdate.toordinal(),0,0))
                 pl1 = players.find(attrib[2])
             if pl2 == None:
-                players.add(player(attrib[4],players.n+1,1450,450,0,nowdate.toordinal(),0,0))
+                players.add(player(attrib[4],players.n+1,1400,450,0,nowdate.toordinal(),0,0))
                 pl2 = players.find(attrib[4])
         
             # add matches now that all players exist
@@ -109,26 +109,27 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
 
             usedata += newstr
 
-    if writevar:
-        with open(path+'/Archive/'+rundate.isoformat()+'_matches.txt','w') as f:
-            f.write(usedata)
-    
+##    if writevar:
+##        with open(path+'/Archive/'+rundate.isoformat()+'_matches.txt','w') as f:
+##            f.write(usedata)
+
     for plind in range(1,players.n+1):
         pl = players.find(plind)
         #filter matches based on calculation window
-        lastMatchOn = max([x.date for x in pl.match])
-        firstMatchOn = min([x.date for x in pl.match])
-        pl.filtermatches(startdate,enddate)
-        if len(pl.match) > 0:
-            pl.sumMatches()
+        if pl != None:
+            lastMatchOn = max([x.date for x in pl.match])
+            firstMatchOn = min([x.date for x in pl.match])
+            pl.filtermatches(startdate,enddate)
+            if len(pl.match) > 0:
+                pl.sumMatches()
 
     # Establish initial laws for today's players
     for plind in range(1,players.n+1):
         pl = players.find(plind)
     
-        if len(pl.match)>0: #did player play today?
+        if pl != None and len(pl.match)>0: #did player play today?
             # set up temporal delay and new rankings
-            if [pl.mean,pl.std] != [1450,450]:
+            if [pl.mean,pl.std] != [1400,450]:
                 delay = rundate - pl.prev 
                 d = delay.days
                 F = gaussian(pl.mean,pl.std)
@@ -174,13 +175,18 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
                   ') to (',pl.newstats[0],',',pl.newstats[1],')\n',sep='')
             
         except AttributeError:
-            print(pl.name,'didn\'t play this time \n')
+            try:
+                print(pl.name,'didn\'t play this time \n')
+            except AttributeError:
+                print('skipped')
 
     # this copies calculated mean/std to main player stats and sorts
     # list by mean ranking
     players.copynew()
     players.list.sort(reverse=True)
 
+    players.purge()
+    
     print('#    Name         Rank    Err   W      L      Total  Provisional? \n')
     # file output to archive, players.txt for next time
     pltxt = ''
@@ -207,6 +213,16 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
                 f.write(str(pl.nloss) + ' ')
                 f.write(pl.prev.isoformat()+'\n')
 
+        with open(path+'/Archive/'+rundate.isoformat()+'_data.txt','w') as f:
+            for pl in players.list:
+                f.write(pl.name + ' ')
+                f.write(str(pl.ind) + ' ')
+                f.write(str(pl.mean) + ' ')
+                f.write(str(round(pl.std)) + ' ')
+                f.write(str(pl.nmatch) + ' ')
+                f.write(str(pl.nwins) + ' ')
+                f.write(str(pl.nloss) + ' ')
+                f.write(pl.prev.isoformat()+'\n')
 
 def init():
     startdate = input('Calculate scores from start date: [mm dd YY]   ')
@@ -222,7 +238,7 @@ def init():
     else:
         startdate = date(2015,7,20)
     
-    enddate = input('Use matches on or before end date: [mm dd YY]   ')
+    enddate = input('Use matches before (NOT INCLUDING) end date: [mm dd YY]   ')
     if enddate != '':
         while True:
             try:    
@@ -250,19 +266,20 @@ def init():
         rewrite = True
 
     print(rewrite)
-    daysInTournament = input('How many days constitute a tournament? (7, 1, ...)   ')
-    if daysInTournament != '':
-        while True:
-            try:
-                daysInTournament = abs(int(daysInTournament))
-                if daysInTournament == 0:
-                    daysinTournament = 1
-                break
-            except ValueError:
-                daysInTournament = input('Input an integer.   ')
-    else:
-            daysInTournament = 7
-            
+##    daysInTournament = input('How many days constitute a tournament? (7, 1, ...)   ')
+##    if daysInTournament != '':
+##        while True:
+##            try:
+##                daysInTournament = abs(int(daysInTournament))
+##                if daysInTournament == 0:
+##                    daysinTournament = 1
+##                break
+##            except ValueError:
+##                daysInTournament = input('Input an integer.   ')
+##    else:
+##            daysInTournament = 7
+
+    daysInTournament = 1
     getPlayerFile(startdate,pingpongpath)
 
     for i in range(startdate.toordinal(),enddate.toordinal(),daysInTournament):

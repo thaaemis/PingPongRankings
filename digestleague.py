@@ -14,10 +14,6 @@ def digest(url):
         with open(out,cleanfile) as f:
             f.write(string)
         return None
-
-    with open(outpath,'r') as f:
-        for newline in f:
-            items = newline.split(' ')
            
     for i in range(1,len(entries)):
         matchdata = entries[i].split(',')
@@ -51,7 +47,7 @@ def getPlayerFile(startdate,path):
     archiveFiles = os.listdir(path+'/Archive')
     datesSaved = []
     for x in archiveFiles:
-        if x[-11:] == 'players.txt':
+        if x[-8:] == 'data.txt':
             datestr= x[:10]
             [year, month, day] = datestr.split('-')
             datesSaved.append(date(int(year),int(month),int(day)))
@@ -61,7 +57,7 @@ def getPlayerFile(startdate,path):
     else:
         recentInds = [ i-1 for i,date in enumerate(datesSaved) if date>=startdate ]
         recentInd = -1 if len(recentInds) == 0 else recentInds[0]
-        fileToRetrieve = '/Archive/'+datesSaved[recentInd].isoformat()+'_players.txt'
+        fileToRetrieve = '/Archive/'+datesSaved[recentInd].isoformat()+'_data.txt'
         with open(path+fileToRetrieve,'r') as f:
             saveStr = f.read()
     with open(path+'players.txt','w') as f:
