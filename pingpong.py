@@ -10,7 +10,7 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
     # digest() retrieves .csv from google with latest matches
     # !!!       modify URL as noted in setup.txt         !!!!
     url = 'https://docs.google.com/spreadsheets/d/1bSgLACFSFCHh0e82Qb-u-Z2vGrAqhX586QGEAbdW3Ys/pub?gid=98643558&single=true&output=csv'
-    digest(url)
+    digest(url,pingpongpath)
 
     # only calculate for matches on or before rundate
     rundate = enddate
