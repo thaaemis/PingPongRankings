@@ -57,7 +57,7 @@ def getPlayerFile(startdate,path):
     else:
         recentInds = [ i-1 for i,date in enumerate(datesSaved) if date>=startdate ]
         recentInd = -1 if len(recentInds) == 0 else recentInds[0]
-        fileToRetrieve = '/Archive/'+datesSaved[recentInd].isoformat()+'_data.txt'
+        fileToRetrieve = 'Archive/'+datesSaved[recentInd].isoformat()+'_data.txt'
         with open(path+fileToRetrieve,'r') as f:
             saveStr = f.read()
     with open(path+'players.txt','w') as f:
