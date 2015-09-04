@@ -2,7 +2,7 @@ import re,time,os
 from datetime import date
 import urllib.request
 
-def digest(url):
+def digest(url,path):
     # Download latest scores
     response = urllib.request.urlopen(url)
     html = response.read()
