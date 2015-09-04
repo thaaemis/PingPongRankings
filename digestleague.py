@@ -65,4 +65,4 @@ def getPlayerFile(startdate,path):
     return None    
     
             
-getPlayerFile(date(2015,8,25),'C:/Users/bkraus/Dropbox/PingPong/')
+

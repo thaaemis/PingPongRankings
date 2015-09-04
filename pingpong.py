@@ -1,10 +1,12 @@
-import time,math,sys,re
+import time,math,sys,re, os
 from datetime import date,timedelta
 from playerclass import player,playerlist,match
 #import matplotlib.pyplot as plt
 from digestleague import digest, getPlayerFile
 
-pingpongpath = 'C:/Users/bkraus/Documents/GitHub/PingPongRankings/'
+
+pingpongpath = '/home/brian/Downloads/PingPongRankings-master/'
+
 def main(startdate,enddate,writevar=False,path=pingpongpath):
 
     # digest() retrieves .csv from google with latest matches
@@ -53,7 +55,7 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
         return result
 
     # Define path and filenames for reference / saving
-    playerfile = 'players.txt'
+    playerfile = 'tmpPlayers.txt' if writevar else 'players.txt'
     with open(path+playerfile,'r') as f:
         data = f.read()
 
@@ -150,7 +152,7 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
         pl = players.find(plind)
         try:
             pl.law2 = pl.law1
-            print(pl.name,'played:')
+            print('\n',pl.name,'played:')
             for match in pl.match: # 1st level
                 opp = players.find(match.oppind)
                 opp.law2 = opp.law1
@@ -176,7 +178,7 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
             
         except AttributeError:
             try:
-                print(pl.name,'didn\'t play this time \n')
+                print(pl.name,'didn\'t play this time')
             except AttributeError:
                 print('skipped')
 
@@ -198,20 +200,24 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
             pltxt += ' '
         pltxt += players.list[i].printnice()
 
+    # save 
+    with open(path+playerfile,'w') as f:
+        for pl in players.list:
+            f.write(pl.name + ' ')
+            f.write(str(pl.ind) + ' ')
+            f.write(str(pl.mean) + ' ')
+            f.write(str(round(pl.std)) + ' ')
+            f.write(str(pl.nmatch) + ' ')
+            f.write(str(pl.nwins) + ' ')
+            f.write(str(pl.nloss) + ' ')
+            f.write(pl.prev.isoformat()+'\n')
+
     if writevar:
+
         with open(path+'/Archive/'+rundate.isoformat()+'_players.txt','w') as f:
             f.write(pltxt)
             
-        with open(path+'players.txt','w') as f:
-            for pl in players.list:
-                f.write(pl.name + ' ')
-                f.write(str(pl.ind) + ' ')
-                f.write(str(pl.mean) + ' ')
-                f.write(str(round(pl.std)) + ' ')
-                f.write(str(pl.nmatch) + ' ')
-                f.write(str(pl.nwins) + ' ')
-                f.write(str(pl.nloss) + ' ')
-                f.write(pl.prev.isoformat()+'\n')
+        
 
         with open(path+'/Archive/'+rundate.isoformat()+'_data.txt','w') as f:
             for pl in players.list:
@@ -223,6 +229,8 @@ def main(startdate,enddate,writevar=False,path=pingpongpath):
                 f.write(str(pl.nwins) + ' ')
                 f.write(str(pl.nloss) + ' ')
                 f.write(pl.prev.isoformat()+'\n')
+
+        
 
 def init():
     startdate = input('Calculate scores from start date: [mm dd YY]   ')
@@ -266,6 +274,10 @@ def init():
         rewrite = True
 
     print(rewrite)
+    if rewrite == False:
+        with open(pingpongpath+'tmpPlayers.txt','w') as f:
+            f.write('')
+
 ##    daysInTournament = input('How many days constitute a tournament? (7, 1, ...)   ')
 ##    if daysInTournament != '':
 ##        while True:
@@ -287,6 +299,8 @@ def init():
         tmpEnd = i + daysInTournament - 1
         main(date.fromordinal(tmpStart), date.fromordinal(tmpEnd), rewrite)
     
+    if rewrite == False:
+        os.remove(path+'tmpPlayers.txt')
         
     
 
