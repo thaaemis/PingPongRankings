@@ -4,8 +4,8 @@ from playerclass import player,playerlist,match
 #import matplotlib.pyplot as plt
 from digestleague import digest, getPlayerFile
 
-
-pingpongpath = '/home/brian/Downloads/PingPongRankings-master/'
+# ensure that pingpongpath ends in / !
+pingpongpath = '/home/brian/Downloads/PingPongRankings-master'
 
 def main(startdate,enddate,writevar=False,path=pingpongpath):
 
